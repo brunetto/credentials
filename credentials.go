@@ -1,26 +1,25 @@
 package credentials
 
 import (
-	"errors"
 	"fmt"
-	"log"
 	"syscall"
 
+	"github.com/pkg/errors"
 	"golang.org/x/crypto/ssh/terminal"
 )
 
 // UsernameAndPassword asks the user for the credentials
-func UsernameAndPassword() (username, password string) {
+func UsernameAndPassword() (username, password string, err error) {
 	fmt.Print("Username: ")
 	fmt.Scan(&username)
 
 	fmt.Print("Password: ")
 	bytePassword, err := terminal.ReadPassword(int(syscall.Stdin))
 	if err != nil {
-		log.Fatal(errors.New("Error reading password: " + err.Error()))
+		return "", "", errors.Wrap(err, "error reading password")
 	}
 	fmt.Println()
 	password = string(bytePassword)
 
-	return username, password
+	return username, password, nil
 }
